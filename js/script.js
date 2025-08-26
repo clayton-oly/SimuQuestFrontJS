@@ -1,7 +1,5 @@
-// URL da sua API local
 const apiBase = "https://localhost:7140";
 
-// Função para buscar dados da API
 async function getSimulatedExam() {
   try {
     const endpoint = "/api/SimulatedExam";
@@ -20,6 +18,52 @@ async function getSimulatedExam() {
 
       const tdNome = document.createElement('td');
       tdNome.textContent = item.nome;
+      tr.appendChild(tdNome);
+
+
+      const tdDescricao = document.createElement('td');
+      tdDescricao.textContent = item.descricao;
+      tr.appendChild(tdDescricao);
+
+      const tdEditar = document.createElement('td');
+      tdEditar.innerHTML = `<button onclick="editar(${item.id})">Editar</button>`;
+      tr.appendChild(tdEditar)
+
+      const tdDeletar = document.createElement('td');
+      tdDeletar.innerHTML = `<button onclick="deletar(${item.id})">Deletar</button>`;
+      tr.appendChild(tdDeletar)
+
+      tabela.appendChild(tr);
+
+      const teste = document.getElementById("opcao")
+      teste.textContent = item.nome
+
+      console.log(teste)
+    });
+
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+  }
+}
+
+async function getQuestionExam() {
+  try {
+    const endpoint = "/api/Question";
+    const response = await fetch(`${apiBase}${endpoint}`);
+    const dados = await response.json();
+    console.log(dados);
+
+    const tabela = document.getElementById('tbQuestion');
+
+    dados.forEach(item => {
+      const tr = document.createElement('tr');
+
+      const tdId = document.createElement('td');
+      tdId.textContent = item.id;
+      tr.appendChild(tdId);
+
+      const tdNome = document.createElement('td');
+      tdNome.textContent = item.texto;
       tr.appendChild(tdNome);
 
       const tdDescricao = document.createElement('td');
@@ -42,9 +86,6 @@ async function getSimulatedExam() {
   }
 }
 
-if (document.getElementById('tbSimulados') != null) getSimulatedExam();
-
-
 document.getElementById("createSimulatedExam").addEventListener("submit", function (event) {
   event.preventDefault();
 
@@ -66,7 +107,6 @@ document.getElementById("createSimulatedExam").addEventListener("submit", functi
     .then(result => console.log("Resposta da API:", result))
     .catch(err => console.error("Erro:", err));
 });
-
 
 document.querySelectorAll(".editar").forEach(btn => {
   btn.addEventListener("click", e => {
@@ -111,3 +151,7 @@ async function deletar(id) {
     alert("Não foi possível deletar o exame.");
   }
 }
+
+if (document.getElementById('tbSimulados') != null) getSimulatedExam();
+
+if (document.getElementById('tbQuestion') != null) getQuestionExam();

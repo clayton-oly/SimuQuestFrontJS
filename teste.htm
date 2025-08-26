@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Dropdown com descrição</title>
+  <style>
+    .descricao {
+      display: none;
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-left: 4px solid #007BFF;
+    }
+
+    .dropdown-wrapper.active .descricao {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="dropdown-wrapper" id="dropdownWrapper">
+    <label for="opcao">Escolha uma opção:</label>
+    <select id="opcao">
+      <option>Informação</option>
+    </select>
+    <div class="descricao">
+      Aqui está uma descrição adicional exibida quando você clica no dropdown.
+    </div>
+  </div>
+
+  <script>
+    const select = document.getElementById('opcao');
+    const wrapper = document.getElementById('dropdownWrapper');
+
+    select.addEventListener('click', () => {
+      wrapper.classList.toggle('active');
+    });
+  </script>
+</body>
+</html>
