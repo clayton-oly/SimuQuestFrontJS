@@ -24,6 +24,10 @@ async function getSimulatedExam() {
       tdDescricao.textContent = item.descricao;
       tr.appendChild(tdDescricao);
 
+      const tdDetalhes = document.createElement('td');
+      tdDetalhes.innerHTML = `<button onclick="detalhes(${item.id})">Ver</button>`;
+      tr.appendChild(tdDetalhes)
+
       const tdEditar = document.createElement('td');
       tdEditar.innerHTML = `<button onclick="editar(${item.id})">Editar</button>`;
       tr.appendChild(tdEditar)
@@ -37,15 +41,15 @@ async function getSimulatedExam() {
 
     const container = document.getElementById("container");
 
-    dados.forEach(item => {
-      const select = document.createElement("select");
+    // dados.forEach(item => {
+    //   const select = document.createElement("select");
 
-      const op = document.createElement("option");
-      op.textContent = item.nome;
-      select.appendChild(op);
+    //   const op = document.createElement("option");
+    //   op.textContent = item.nome;
+    //   select.appendChild(op);
 
-      container.appendChild(select);
-    });
+    //   container.appendChild(select);
+    // });
 
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
@@ -79,6 +83,10 @@ async function getQuestionExam() {
       const tdNomeExame = document.createElement('td');
       tdNomeExame.textContent = item.nomeExame;
       tr.appendChild(tdNomeExame);
+
+      const tdDetalhes = document.createElement('td');
+      tdDetalhes.innerHTML = `<button onclick="detalhes(${item.id})">Ver</button>`;
+      tr.appendChild(tdDetalhes)
 
       const tdEditar = document.createElement('td');
       tdEditar.innerHTML = `<button onclick="editar(${item.id})">Editar</button>`;
@@ -193,6 +201,74 @@ function postQuestion() {
       .catch(err => console.error("Erro:", err));
   });
 }
+
+async function detalhes(id) {
+  try {
+    const endpoint = `/api/SimulatedExam/${id}`;
+    const response = await fetch(`${apiBase}${endpoint}`);
+
+    if (!response.ok) throw new Error("Erro ao buscar o exame");
+
+    const dados = await response.json();
+
+    localStorage.setItem("dadosExame", JSON.stringify([dados]));
+
+    window.location.href = "detalhesExame.html";
+  } catch (err) {
+    console.error(err);
+    alert("Não foi possível buscar o exame.");
+  }
+}
+
+
+function montarTabela() {
+  const tabela = document.getElementById("abc");
+  if (!tabela) return;
+
+  const dados = JSON.parse(localStorage.getItem("dadosExame")) || [];
+
+  const exame = Array.isArray(dados) ? dados[0] : dados;
+
+  console.log(dados)
+
+  exame.questions.forEach(q => {
+    const tr = document.createElement("tr");
+
+    const tdId = document.createElement("td");
+    tdId.textContent = q.ordem;
+    tr.appendChild(tdId);
+
+    const tdTexto = document.createElement("td");
+    tdTexto.textContent = q.texto;
+    tr.appendChild(tdTexto);
+
+    const tdDetalhes = document.createElement('td');
+    tdDetalhes.innerHTML = `<button onclick="detalhes(${q.id})">Ver</button>`;
+    tr.appendChild(tdDetalhes)
+
+    const tdEditar = document.createElement("td");
+    tdEditar.innerHTML = `<button onclick="editar(${q.id})">Editar</button>`;
+    tr.appendChild(tdEditar);
+
+    const tdDeletar = document.createElement("td");
+    tdDeletar.innerHTML = `<button onclick="deletar(${q.id})">Deletar</button>`;
+    tr.appendChild(tdDeletar);
+
+    tabela.appendChild(tr);
+  });
+
+
+  document.getElementById("nomeExame").textContent = exame.nome;
+  document.getElementById("descricaoExame").textContent = exame.descricao;
+  document.getElementById("dataExame").textContent = exame.dataCriacao;
+}
+
+
+if (window.location.pathname.endsWith("detalhesExame.html")) {
+  window.addEventListener("DOMContentLoaded", montarTabela);
+}
+
+
 
 async function editar(id) {
   try {
