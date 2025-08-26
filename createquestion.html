@@ -15,22 +15,18 @@
     </ul>
 </nav>
 
-<h1>Questões</h1>
+<h1>Exames</h1>
 
-<table border="1" id="tbQuestion">
-    <tr>
-        <th>Id</th>
-        <th>Enunciado</th>
-        <th>Explicacao</th>
-        <th>Exame</th>
-        <th>Editar</th>
-        <th>Deletar</th>
-    </tr>
-</table>
-
-<button>
-    <a href="createquestion.html">Novo Questao</a>
-</button>
+<form id="createQuestion">
+    <label for="">Enunciado</label>
+    <input type="text" name="enunciado" id="enunciado">
+    <label for="">Explicacao</label>
+    <input type="text" name="explicacao" id="explicacao">
+    <select name="" id="selecao">
+        <option value="">Selecione o Exame</option>
+    </select>
+    <button type="submit">Enviar</button>
+</form>
 
 
 <script src="JS/script.js"></script>

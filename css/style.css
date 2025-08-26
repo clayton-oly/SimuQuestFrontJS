@@ -42,7 +42,15 @@ nav ul li a:hover {
   background-color: #575757;
 }
 
-form{
+form {
   display: flex;
   flex-direction: column;
+  margin-top: 50px;
+}
+
+#container {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px
 }

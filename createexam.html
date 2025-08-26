@@ -15,22 +15,16 @@
     </ul>
 </nav>
 
-<h1>Questões</h1>
+<h1>Exames</h1>
 
-<table border="1" id="tbQuestion">
-    <tr>
-        <th>Id</th>
-        <th>Enunciado</th>
-        <th>Explicacao</th>
-        <th>Exame</th>
-        <th>Editar</th>
-        <th>Deletar</th>
-    </tr>
-</table>
 
-<button>
-    <a href="createquestion.html">Novo Questao</a>
-</button>
+<form id="createSimulatedExam">
+    <label for="">Nome do Exame</label>
+    <input type="text" name="nome" id="nome">
+    <label for="">Descrição</label>
+    <input type="text" name="descricao" id="descricao">
+    <button type="submit">Enviar</button>
+</form>
 
 
 <script src="JS/script.js"></script>
