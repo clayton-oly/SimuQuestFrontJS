@@ -29,7 +29,8 @@ async function getSimulatedExam() {
       tr.appendChild(tdDetalhes)
 
       const tdEditar = document.createElement('td');
-      tdEditar.innerHTML = `<button onclick="editar(${item.id})">Editar</button>`;
+      tdEditar.innerHTML = `<button data-toggle="modal" data-target="#ExemploModalCentralizado" onclick="editar(${item.id})">Editar</button>`;
+      console.log(tdEditar)
       tr.appendChild(tdEditar)
 
       const tdDeletar = document.createElement('td');
@@ -89,7 +90,7 @@ async function getQuestionExam() {
       tr.appendChild(tdDetalhes)
 
       const tdEditar = document.createElement('td');
-      tdEditar.innerHTML = `<button onclick="editar(${item.id})">Editar</button>`;
+      tdEditar.innerHTML = `<button onclick="editarQuestion(${item.id})">Editar</button>`;
       tr.appendChild(tdEditar)
 
       const tdDeletar = document.createElement('td');
@@ -174,6 +175,54 @@ function postSimulatedExam() {
   });
 }
 
+function putSimulatedExam() {
+  document.getElementById("EditSimulatedExam").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const data = {
+      nome: document.getElementById("nome").value,
+      descricao: document.getElementById("descricao").value
+    };
+
+    const endpoint = `/api/SimulatedExam/${id}`;
+
+    fetch((`${apiBase}${endpoint}`), {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+      .then(result => console.log("Resposta da API:", result))
+      .catch(err => console.error("Erro:", err));
+  });
+}
+
+function putQuestion() {
+  document.getElementById("EditQuestion").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const data = {
+      nome: document.getElementById("nome").value,
+      descricao: document.getElementById("descricao").value
+    };
+
+    const endpoint = `/api/Question/${id}`;
+
+    fetch((`${apiBase}${endpoint}`), {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+      .then(res => res.json())
+      .then(result => console.log("Resposta da API:", result))
+      .catch(err => console.error("Erro:", err));
+  });
+}
+
 function postQuestion() {
   document.getElementById("createQuestion").addEventListener("submit", function (event) {
     event.preventDefault();
@@ -205,6 +254,24 @@ function postQuestion() {
 async function detalhes(id) {
   try {
     const endpoint = `/api/SimulatedExam/${id}`;
+    const response = await fetch(`${apiBase}${endpoint}`);
+
+    if (!response.ok) throw new Error("Erro ao buscar o exame");
+
+    const dados = await response.json();
+
+    localStorage.setItem("dadosExame", JSON.stringify([dados]));
+
+    window.location.href = "detalhesExame.html";
+  } catch (err) {
+    console.error(err);
+    alert("Não foi possível buscar o exame.");
+  }
+}
+
+async function detalhesQuestion(id) {
+  try {
+    const endpoint = `/api/Question/${id}`;
     const response = await fetch(`${apiBase}${endpoint}`);
 
     if (!response.ok) throw new Error("Erro ao buscar o exame");
@@ -264,9 +331,7 @@ function montarTabela() {
 }
 
 
-if (window.location.pathname.endsWith("detalhesExame.html")) {
-  window.addEventListener("DOMContentLoaded", montarTabela);
-}
+
 
 
 
@@ -282,10 +347,37 @@ async function editar(id) {
     const dados = await response.json();
     console.log(dados);
 
+    document.getElementById("id").value = dados.id;
+    document.getElementById("nomeExame").value = dados.nome;
+    document.getElementById("descricao").value = dados.descricao;
+
+
   } catch (error) {
     console.error(error);
     alert("Não foi possível buscar o exame.");
   }
+}
+
+async function salvar() {
+
+  const data = {
+    id: document.getElementById("id").value,
+    nome: document.getElementById("nomeExame").value,
+    descricao: document.getElementById("descricao").value
+  };
+
+  const endpoint = `/api/SimulatedExam/${data.id}`;
+
+  await fetch((`${apiBase}${endpoint}`), {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  })
+
+  location.reload();
+
 }
 
 async function deletar(id) {
@@ -306,6 +398,11 @@ async function deletar(id) {
   }
 }
 
+
+if (window.location.pathname.endsWith("detalhesExame.html")) {
+  window.addEventListener("DOMContentLoaded", montarTabela);
+}
+
 if (document.getElementById('tbSimulados') != null) getSimulatedExam();
 
 if (document.getElementById('tbOption') != null) getOption();
@@ -313,6 +410,10 @@ if (document.getElementById('tbOption') != null) getOption();
 if (document.getElementById('tbQuestion') != null) getQuestionExam();
 
 if (document.getElementById('createSimulatedExam') != null) postSimulatedExam();
+
+if (document.getElementById('EditSimulatedExam') != null) patSimulatedExam();
+
+if (document.getElementById('EditQuestion') != null) patQuestion();
 
 if (document.getElementById('createQuestion') != null) getSimulatedExamNome(), postQuestion();
 
@@ -333,3 +434,25 @@ async function getSimulatedExamNome() {
 }
 
 
+async function editarQuestion(id) {
+  try {
+    const endpoint = `/api/Question/${id}`;
+    const response = await fetch(`${apiBase}${endpoint}`);
+
+    if (!response.ok) {
+      throw new Error("Erro ao buscar o exame");
+    }
+
+    const dados = await response.json();
+    console.log(dados);
+
+    document.getElementById("id").value = dados.id;
+    document.getElementById("nomeExame").value = dados.nome;
+    document.getElementById("descricao").value = dados.descricao;
+
+
+  } catch (error) {
+    console.error(error);
+    alert("Não foi possível buscar o exame.");
+  }
+}
