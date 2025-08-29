@@ -16,6 +16,8 @@ async function getSimulatedExam() {
       tdId.textContent = item.id;
       tr.appendChild(tdId);
 
+      console.log("id" + item.id)
+
       const tdNome = document.createElement('td');
       tdNome.textContent = item.nome;
       tr.appendChild(tdNome);
@@ -63,6 +65,7 @@ async function getQuestionExam() {
     const response = await fetch(`${apiBase}${endpoint}`);
     const dados = await response.json();
     console.log(dados);
+    console.log("cachorro")
 
     const tabela = document.getElementById('tbQuestion');
 
@@ -280,7 +283,7 @@ async function detalhesQuestion(id) {
 
     localStorage.setItem("dadosExame", JSON.stringify([dados]));
 
-    window.location.href = "detalhesExame.html";
+    window.location.href = "detalhesQuestion.html";
   } catch (err) {
     console.error(err);
     alert("Não foi possível buscar o exame.");
@@ -297,13 +300,19 @@ function montarTabela() {
   const exame = Array.isArray(dados) ? dados[0] : dados;
 
   console.log(dados)
+  console.log("Gato")
 
   exame.questions.forEach(q => {
     const tr = document.createElement("tr");
 
     const tdId = document.createElement("td");
-    tdId.textContent = q.ordem;
+    tdId.textContent = q.id;
     tr.appendChild(tdId);
+    console.log(q.id)
+
+    const tdIdOrdem = document.createElement("td");
+    tdIdOrdem.textContent = q.ordem;
+    tr.appendChild(tdIdOrdem);
 
     const tdTexto = document.createElement("td");
     tdTexto.textContent = q.texto;
