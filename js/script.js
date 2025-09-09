@@ -7,7 +7,6 @@ if (document.getElementById('tbSimulados') != null) getSimulatedExam();
 
 if (document.getElementById('createSimulatedExam') != null) postSimulatedExam();
 
-if (document.getElementById('EditSimulatedExam') != null) patSimulatedExam();
 
 async function getSimulatedExam() {
   try {
@@ -15,7 +14,6 @@ async function getSimulatedExam() {
     const response = await fetch(`${apiBase}${endpoint}`);
     const dados = await response.json();
     console.log(dados);
-    console.log(dados.isArray);
 
     const tabela = document.getElementById('tbSimulados');
 
@@ -303,10 +301,14 @@ function montarTabelaQuestion() {
     tdTexto.textContent = q.texto;
     tr.appendChild(tdTexto);
 
+
+    console.log("ID " + q.id)
+
     const tdDetalhes = document.createElement('td');
     tdDetalhes.innerHTML = `<button onclick="detalhesQuestion(${q.id})">Ver</button>`;
     tr.appendChild(tdDetalhes)
 
+    console.log(q.id + "QUAL ID É ESSE")
     const tdEditar = document.createElement("td");
     tdEditar.innerHTML = `<button onclick="editarQuestion(${q.id})">Editar</button>`;
     tr.appendChild(tdEditar);
@@ -345,29 +347,27 @@ async function getSimulatedExamNome() {
 
 async function detalhesQuestion(id) {
   try {
-    const endpoint = `/api/SimulatedExam/${id}`;
+    const endpoint = `/api/Question/${id}`;
     const response = await fetch(`${apiBase}${endpoint}`);
 
     if (!response.ok) throw new Error("Erro ao buscar o exame");
-
     const dados = await response.json();
 
-    console.log("dados da question")
-    console.log(dados)
+    localStorage.setItem("dadosQuestion", JSON.stringify([dados]));
+    localStorage.setItem("idQuestion", id)
 
-    localStorage.setItem("dadosExame", JSON.stringify([dados]));
-    localStorage.setItem("idExame", id)
-
+    console.log("id question", id)
     window.location.href = "option.html";
   } catch (err) {
     console.error(err);
     alert("Não foi possível buscar o exame.");
   }
 }
+
 //Botão para editar as informações da linha selecionada na tabela exames
 async function editarQuestion(id) {
   try {
-    const endpoint = `/api/SimulatedExam/${id}`;
+    const endpoint = `/api/Question/${id}`;
     const response = await fetch(`${apiBase}${endpoint}`);
 
     if (!response.ok) {
@@ -377,9 +377,9 @@ async function editarQuestion(id) {
     const dados = await response.json();
     console.log(dados);
 
-    document.getElementById("id").value = dados.id;
-    document.getElementById("nomeExame").value = dados.nome;
-    document.getElementById("descricao").value = dados.descricao;
+    // document.getElementById("id").value = dados.id;
+    // document.getElementById("nomeExame").value = dados.nome;
+    // document.getElementById("descricao").value = dados.descricao;
 
 
   } catch (error) {
@@ -489,117 +489,20 @@ function putQuestion() {
   });
 }
 
-function montarTabelaOption() {
-  const tabela = document.getElementById("tbQuestions");
-  if (!tabela) return;
-
-  const dados = JSON.parse(localStorage.getItem("dadosExame")) || [];
-
-  console.log(localStorage.getItem("idExame"))
-  const idExame = (localStorage.getItem("idExame"))
-  const exame = Array.isArray(dados) ? dados[0] : dados;
-
-  console.log(dados)
-
-  exame.questions.forEach(q => {
-    const tr = document.createElement("tr");
-
-    const tdId = document.createElement("td");
-    tdId.textContent = q.id;
-    tr.appendChild(tdId);
-    console.log(q.id)
-
-    const tdIdOrdem = document.createElement("td");
-    tdIdOrdem.textContent = q.ordem;
-    tr.appendChild(tdIdOrdem);
-
-    const tdTexto = document.createElement("td");
-    tdTexto.textContent = q.texto;
-    tr.appendChild(tdTexto);
-
-    const tdDetalhes = document.createElement('td');
-    tdDetalhes.innerHTML = `<button onclick="detalhesQuestion(${q.idExame})">Ver</button>`;
-    tr.appendChild(tdDetalhes)
-
-    const tdEditar = document.createElement("td");
-    tdEditar.innerHTML = `<button onclick="editar(${q.id})">Editar</button>`;
-    tr.appendChild(tdEditar);
-
-    const tdDeletar = document.createElement("td");
-    tdDeletar.innerHTML = `<button onclick="deletar(${q.id})">Deletar</button>`;
-    tr.appendChild(tdDeletar);
-
-    tabela.appendChild(tr);
-  });
-
-
-  document.getElementById("nomeExame").textContent = exame.nome;
-  document.getElementById("descricaoExame").textContent = exame.descricao;
-  document.getElementById("dataExame").textContent = exame.dataCriacao;
-}
-
-async function getQuestionExam() {
-  try {
-    const endpoint = "/api/Question";
-    const response = await fetch(`${apiBase}${endpoint}`);
-    const dados = await response.json();
-
-    console.log("getQuestionExam")
-    console.log(dados);
-    console.log("getQuestionExam")
-
-    const tabela = document.getElementById('tbQuestion');
-
-    dados.forEach(item => {
-      const tr = document.createElement('tr');
-
-      const tdId = document.createElement('td');
-      tdId.textContent = item.id;
-      tr.appendChild(tdId);
-
-      const tdNome = document.createElement('td');
-      tdNome.textContent = item.texto;
-      tr.appendChild(tdNome);
-
-      const tdDescricao = document.createElement('td');
-      tdDescricao.textContent = item.explicacao;
-      tr.appendChild(tdDescricao);
-
-      const tdNomeExame = document.createElement('td');
-      tdNomeExame.textContent = item.nomeExame;
-      tr.appendChild(tdNomeExame);
-
-      const tdDetalhes = document.createElement('td');
-      tdDetalhes.innerHTML = `<button onclick="detalhesQuestion(${item.id})">Ver</button>`;
-      tr.appendChild(tdDetalhes)
-
-      const tdEditar = document.createElement('td');
-      tdEditar.innerHTML = `<button onclick="editarQuestion(${item.id})">Editar</button>`;
-      tr.appendChild(tdEditar)
-
-      const tdDeletar = document.createElement('td');
-      tdDeletar.innerHTML = `<button onclick="deletar(${item.id})">Deletar</button>`;
-      tr.appendChild(tdDeletar)
-
-      tabela.appendChild(tr);
-    });
-
-
-  } catch (error) {
-    console.error('Erro ao carregar dados:', error);
-  }
-}
-
 async function getOption() {
   try {
-    const endpoint = "/api/Option";
+    const idQ = localStorage.getItem("idQuestion")
+    console.log("id question", idQ)
+
+    const endpoint = `/api/Question/${idQ}`;
     const response = await fetch(`${apiBase}${endpoint}`);
     const dados = await response.json();
-    console.log(dados);
+
+    console.log(dados)
 
     const tabela = document.getElementById('tbOption');
 
-    dados.forEach(item => {
+    dados.options.forEach(item => {
       const tr = document.createElement('tr');
 
       const tdId = document.createElement('td');
@@ -631,7 +534,7 @@ async function getOption() {
 
 
   } catch (error) {
-    console.error('Erro ao carregar dados:', error);
+   console.error('Erro ao carregar dados:', error);
   }
 }
 
